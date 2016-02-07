@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Event</title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+
+     <p>Click this document to activate the handler.</p>
+
+
+	<button>Click me</button>
+    <p>No handler here.</p>
+
+
+    <p>A paragraph whit a <button>button</button>.</p>
+
+
+    <button>A</button>
+    <button>B</button>
+    <button>C</button>
+
+
+    <a href="https://developer.mozilla.org">MDN</a>
+
+    <!--Клавиши-->
+    <p>This page turns violet when you hold da V key.</p>
+
+
+    <p>Press Ctrl-Space to continue.</p>
+
+
+    <p>Focus this page and type something.</p>
+
+
+    <!--Мишка-->
+    <style type="text/css" media="screen">
+    body{
+         height: 200px;
+         background: beige;
+    }
+    .dot{
+    	height: 8px; width: 8px;
+    	border-radius: 4px;
+    	background: blue;
+    	position: absolute;
+    }
+    </style>
+
+
+
+    <p>Drag the bar to change its width:</p>
+    <div style="background: orange; width: 60px; height: 20px"></div>
+
+
+    <p>Hover over this <strong>paragraph</strong>.</p>
+    <style type="text/css">
+    p:hover{
+    	color: red;
+    }
+    </style>
+
+
+
+<!--Scroll-->
+<style type="text/css">
+  .progress{
+    border:1px solid blue;
+    width: 100px;
+    position: fixed;
+    top: 10px;right: 10px;
+  }
+  .progress>div {
+    height: 12px;
+    background:blue;
+    width: 0%;
+  }
+  body{
+    height:2000px;
+  }
+</style>
+<div class="progress"><div></div></div>
+<p>Scroll me....</p>
+
+ 
+<!--Focus-->
+<p>Name:<input type="text" data-help='Your full name'></p>
+<p>Age:<input type="text" data-help='Age in years'></p>
+<p id="help"></p>
+
+
+
+<textarea>Type something here..</textarea>
+
+
+
+
+
+<script>
+
+   addEventListener('click', function() {
+   	console.log('You clicked!');
+   });
+
+
+   var button = document.querySelector("button");
+
+   function once() {
+   	console.log('Done');
+   	button.removeEventListener('click', once);
+   }
+   button.addEventListener('click', once);
+
+   button.addEventListener('mousedown', function(event) {
+   	if (event.which == 1) {
+   		console.log('Left button');
+   	} else if (event.which == 2) {
+   		console.log('Middle button');
+   	} else if (event.which == 3) {
+   		console.log('Right button');
+   	}
+   });
+
+   button.addEventListener("click", function() {
+   	console.log("Button clicked.");
+   });
+
+
+
+   var para = document.querySelector('p');
+   var button = document.querySelector('button');
+
+   para.addEventListener('mousedown', function() {
+   	console.log('Handler for paragraph.');
+   });
+
+   button.addEventListener('mousedown', function(event) {
+   	console.log('Handler for button.');
+   	if (event.which == 3) {
+   		event.stopPropagation();
+   	}
+   });
+
+   document.body.addEventListener('click', function(event) {
+   	if (event.target.nodeName == 'BUTTON') {
+   		console.log('Clicked', event.target.textContent);
+   	}
+   });
+
+
+   var link = document.querySelector('a');
+   link.addEventListener('click', function(event) {
+   	console.log('Nope.');
+   	event.preventDefault()
+   });
+
+
+   //Клавиши
+   addEventListener('keydown', function(event) {
+   	if (event.keyCode == 86) {
+   		document.body.style.background = 'violet';
+   	}
+   });
+   addEventListener('keyup', function(event) {
+   	if (event.keyCode == 86) {
+   		document.body.style.background = '';
+   	}
+   });
+   console.log('Violet'.charCodeAt(0));
+   console.log('1'.charCodeAt(0));
+
+
+   addEventListener('keydown', function(event) {
+   	if (event.keyCode == 32 && event.ctrlKey) {
+   		console.log('Continuing!');
+   	}
+   });
+
+
+
+
+   addEventListener('keypress', function(event) {
+   	console.log(String.fromCharCode(event.charCode));
+   });
+
+
+   //Мишка
+   addEventListener('click', function(event) {
+   	var dot = document.createElement('div');
+   	dot.className = 'dot';
+   	dot.style.left = (event.pageX - 4) + 'px';
+   	dot.style.top = (event.pageY - 4) + 'px';
+   	document.body.appendChild(dot);
+   });
+
+
+   var lastX;
+   var rect = document.querySelector('div');
+   rect.addEventListener('mousedown', function(event) {
+   	if (event.which == 1) {
+   		lastX = event.pageX;
+   		addEventListener('mousemove', moved);
+   		event.preventDefault();
+   	}
+   });
+
+   function buttonPressed(event) {
+   	if (event.buttons == null) {
+   		return event.which != 0;
+   	} else {
+   		return event.buttons != 0;
+   	}
+   }
+
+   function moved(event) {
+   	if (!buttonPressed(event)) {
+   		removeEventListener('mousemove', moved);
+   	} else {
+   		var dist = event.pageX - lastX;
+   		var newWidth = Math.max(10, rect.offsetWidth + dist);
+   		rect.style.width = newWidth + 'px';
+   		lastX = event.pageX;
+   	}
+   }
+
+
+
+    var para = document.querySelector("p");
+
+    function isInside(node, target) {
+    	for (; node != null; node = node.parentNode)
+    		if (node == target) return true;
+    }
+    para.addEventListener("mouseover", function(event) {
+    	if (!isInside(event.relatedTarget, para))
+    		para.style.color = "red";
+    });
+    para.addEventListener("mouseout", function(event) {
+    	if (!isInside(event.relatedTarget, para))
+    		para.style.color = "";
+    });
+   
+
+
+
+
+   //Scroll
+   var bar = document.querySelector('.progress div');
+   addEventListener('scroll', function() {
+     var max = document.body.scrollHeight - innerHeight;
+     var precent = (pageYOffset / max) * 100;
+     bar.style.width = precent + '%';
+   });
+
+
+
+   //Focus
+   var help = document.querySelector('#help');
+   var fields = document.querySelector('input');
+   for (var i = 0; i < fields.length; i++) {
+     fields[i].addEventListener('focus', function(event) {
+       var text = event.target.getAttribute('data-help');
+       help.textContent = text;
+     });
+     fields[i].addEventListener('blur', function(event) {
+       help.textContent = '';
+     });
+   };
+
+
+
+   //setTimeout
+   document.body.style.background = 'blue';
+   setTimeout(function() {
+     document.body.style.background = 'yellow';
+   }, 2000);
+
+   var bombTimer = setTimeout(function() {
+     console.log('BOOM!');
+   }, 500);
+
+   if (Math.random() < 0.5) {
+     console.log('Defused.');
+     clearTimeout(bombTimer);
+   }
+
+
+   var ticks = 0;
+   var clock = setInterval(function() {
+     console.log('tick', ticks++);
+     if (ticks == 10) {
+       clearInterval(clock);
+       console.log('stop');
+     }
+   }, 200);
+
+   var textarea = document.querySelector('textarea');
+   var timeout;
+   textarea.addEventListener('keydown', function() {
+     clearTimeout(timeout);
+     timeout = setTimeout(function() {
+       console.log('You stopped typing.')
+     }, 500);
+   });
+
+
+
+   function displayCoords(event) {
+     document.body.textContent =
+       'Mouse at ' + event.pageX + ',' + event.pageY;
+   }
+   var scheduled = false,
+     lastEvent;
+   addEventListener('mousemove', function(event) {
+     lastEvent = event;
+     if (!scheduled) {
+       scheduled = true;
+       setTimeout(function() {
+         scheduled = false;
+         //displayCoords(lastEvent);
+       }, 250);
+     }
+   });
+	</script>
+</body>
+</html>
