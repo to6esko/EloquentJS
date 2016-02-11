@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>HTTP</title>
+	<link rel="stylesheet" href="">
+</head>
+<body>
+	
+	<!--Protokol-->
+	<!--request-->
+	<!--
+	GET/17_http.html HTTP/1.1
+    Host:eloquentjavascript.net
+    User-Agent: Your brouser's name
+-->
+    <!--responds-->
+    <!--
+    HTTP/1.1 200 OK
+    Content-Length:65585
+    Content-Type:text/html
+    Last-Modified:Web,09 Apr 2014 10:48:09 GMT
+    <!doctype html>
+    ....the rest of the document
+
+
+
+POST /example/message.html HTTP/1.1
+Content-length: 24
+Content-type: application/x-www-form-urlencoded
+
+name=Jean&message=Yes%3F
+-->
+
+    <!--Brousers and HTTP-->
+    <!--
+    <form method="GET" action="example/message.html">
+    	<p>Name:<input type="text" name="name"></p>
+    	<p>Message:<br><textarea name="message"></textarea></p>
+    	<p><button type="submit">Send</button></p>
+    </form>
+-->
+
+    <script type="text/javascript">
+
+   //console.log(encodeURIComponent("Hello & goodbye"));
+    // → Hello%20%26%20goodbye
+
+//console.log(decodeURIComponent("Hello%20%26%20goodbye"));
+    // → Hello & goodbye
+
+
+
+
+
+
+
+//Request
+var req=new XMLHttpRequest();
+req.open('GET','example/data.txt',false);
+req.send(null);
+console.log(req.status, req.statusText);
+//200 OK
+console.log(req.getResponseHeader('content-type'));
+//text/plain
+console.log(req.responseText);
+// → This is the content of data.txt
+
+
+//Asynchronous Requests
+var req =new XMLHttpRequest();
+req.open('GET','example/data.txt',true);
+req.addEventListener('load',function () {
+    console.log('Done',req.status);
+});
+req.send(null);
+
+<fruits>
+  <fruit name="banana" color="yellow"/>
+  <fruit name="lemon" color="yellow"/>
+  <fruit name="cherry" color="red"/>
+</fruits>
+var req = new XMLHttpRequest();
+req.open("GET", "example/fruit.json", false);
+req.send(null);
+console.log(JSON.parse(req.responseText));
+// → {banana: "yellow", lemon: "yellow", cherry: "red"}
+
+
+
+//Абстрактни заявки
+
+function backgroundReadFile (url,callback) {
+    var req=new XMLHttpRequest();
+    req.open('GET',url,true);
+    req.addEventListener('load',function () {
+        if (req.status<400) {
+            callback(req.responseText);
+        }
+    });
+    req.send(null);
+}
+
+//Obrabotka na greska
+function getURL (url,callback) {
+    var req=new XMLHttpRequest();
+    req.open('GET',url,true);
+    req.addEventListener('load',function () {
+        if (req.status<400) {
+            callback(req.responseText);
+        }else{
+            callback(null,new Error('Request failed: '+
+                req.statusText));
+        }
+    });
+    req.addEventListener('error',function  () {
+        callback(null,new Error('Network error'));
+    });
+    req.send(null);
+}
+getURL('data/nonsense.txt',function (content,error) {
+    if (error!=null) {
+        console.log('Failed to fetch nonsense.txt: '+error);
+    }else {
+        console.log('nonsense.txt: '+content);
+    }
+});
+//Failed to fetch nonsense.txt: Error: Request failed: Not Found
+
+
+
+//Promises
+function  get (url) {
+    return new Promise(function (succeed,fail) {
+        var req=new XMLHttpRequest();
+        req.open('GET',url,true);
+        req.addEventListener('load',function  () {
+            if (req.status<400) {
+                succeed(req.responseText);
+            }else {
+                fail(new Error('Request failed: '+req.statusText));
+            }
+        });
+        req.addEventListener('error',function () {
+            fail(new Error('Network error'));
+        });
+        req.send(null);
+    });
+}
+
+get('example/data.txt').then(function (text) {
+    console.log('data.txt: '+text);
+},function (error) {
+    console.log('Failed to fetch data.txt: '+error);
+});
+//data.txt: This is the content of data.txt
+
+function getJSON(url) {
+    return get(url).then(JSON.parse)
+} 
+</script>
+
+<script type = "text/javascript">
+    //Promise
+    function showMessage(msg) {
+        var elt = document.createElement('div');
+        elt.etxtContent = msg;
+        return document.body.appendChild(elt);
+    }
+var loading = showMessage('Loading...');
+getJSON('example/bert.json').then(function(bert) {
+    return getJSON(bert.spouse);
+}).then(function(spouse) {
+    return getJSON(spouse.mother);
+}).then(function(mother) {
+    showMessage('The name is ' + mother.name);
+}).catch(function(error) {
+    showMessage(String(error));
+}).then(function() {
+    document.body.removeChild(loading);
+});
+//The name is Muriel
+    </script>
+</body>
+</html>
