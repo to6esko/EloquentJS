@@ -197,7 +197,7 @@ var cx = document.querySelector("canvas").getContext("2d");
                  100, 0, spriteW, spriteH);
   });
 */
-
+/*
 var cx = document.querySelector("canvas").getContext("2d");
   function branch(length, angle, scale) {
     cx.fillRect(0, 0, 1, length);
@@ -212,7 +212,24 @@ var cx = document.querySelector("canvas").getContext("2d");
   }
   cx.translate(300, 0);
   branch(60, 0.5, 0.8);
+*/
 
+
+//Определяне на цвета
+function pixelAt(cx, x, y) {
+  var data = cx.getImageData(x, y, 1, 1);
+  console.log(data.data);
+}
+
+var canvas = document.createElement("canvas");
+var cx = canvas.getContext("2d");
+pixelAt(cx, 10, 10);
+// → [0, 0, 0, 0]
+
+cx.fillStyle = "red";
+cx.fillRect(10, 10, 1, 1);
+pixelAt(cx, 10, 10);
+// → [255, 0, 0, 255]
 </script>
 </body>
 </html>
